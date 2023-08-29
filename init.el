@@ -77,6 +77,41 @@
   (add-hook 'before-save-hook 'lsp-format-buffer nil t))
 
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Ruby
+(use-package ruby-mode
+  :ensure t
+  :mode "\\.rb\\'"
+  :mode "Rakefile\\'"
+  :mode "Gemfile\\'"
+  :mode "Berksfile\\'"
+  :mode "Vagrantfile\\'"
+  :interpreter "ruby"
+
+  :init
+  (setq ruby-indent-level 2
+        ruby-indent-tabs-mode nil)
+  (add-hook 'ruby-mode 'superword-mode)
+
+  :bind
+  (([(meta down)] . ruby-forward-sexp)
+   ([(meta up)]   . ruby-backward-sexp)
+   (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
+
+
+;; (use-package ruby-tools
+;;   :ensure t
+;;   :init
+;;   (add-hook 'ruby-mode-hook 'ruby-tools-mode)
+;;   :diminish ruby-tools-mode)
+
+;;(use-package yari
+;;  :ensure t
+;;  :init
+;;  (add-hook 'ruby-mode-hook
+;;            (lambda ()
+;;              (local-set-key [f1] 'yari))))
+
 ;; LSP
 (use-package lsp-mode
   :ensure
@@ -97,15 +132,17 @@
   (lsp-rust-analyzer-display-parameter-hints nil)
   (lsp-rust-analyzer-display-reborrow-hints nil)
   :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))(use-package lsp-mode
-  :ensure t
-  :hook (ruby-mode . lsp))
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
   :custom
   (lsp-uo-doc-show-with-cursor t))
+
+(use-package web-mode
+  :ensure t
+  :mode "\\.erb\\'")
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
@@ -165,6 +202,9 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.01))
+
+(use-package magit
+  :ensure t)
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Inline errors
@@ -441,9 +481,10 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(format-all lsp-ruby neotree atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(projectile magit format-all lsp-ruby neotree atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
+ '(show-paren-mode t)
  '(tab-bar-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
