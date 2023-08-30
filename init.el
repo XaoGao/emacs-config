@@ -4,9 +4,10 @@
 (require 'neotree)
 (package-initialize)
 
-(global-set-key "\C-x\ \C-g" 'recentf-open-files) ;; open recently file 
-(global-set-key [f8] 'neotree-toggle) ;; project tree
-;;
+;; Open recently file 
+(global-set-key "\C-x\ \C-g" 'recentf-open-files)
+;; Project tree
+(global-set-key [f8] 'neotree-toggle) 
 
 ;; Needed for `:after char-fold' to work
 (use-package char-fold
@@ -28,6 +29,20 @@
   (reverse-im-input-methods '("ukrainian-computer")) ; translate these methods
   :config
   (reverse-im-mode t)) ; turn the mode on
+
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Naviagtion Avy
+(use-package avy
+  :ensure t
+  :bind
+  ("M-g l" . avy-goto-line)
+  ("C-c l" . avy-copy-line)
+  ("C-c m" . avy-move-line)
+  ("M-g e" . avy-goto-word-0)  
+  ("M-g w" . avy-goto-word-1)
+  ("C-:" . avy-goto-char)
+  ("C-'" . avy-goto-char-2))
 
 ;; Scroll effect
 (setq redisplay-dont-pause t
