@@ -51,6 +51,16 @@
   ("C-d" . mc/mark-next-like-this)
   ("C-k" . mc/skip-to-next-like-this))
 
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/Documents")
+    (setq projectile-project-search-path '("~/Documents")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Effects
 ;; Scroll effect
@@ -67,7 +77,6 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; rustic = basic rust-mode + additions
-
 (use-package rustic
   :ensure t
   :bind (:map rustic-mode-map
@@ -132,9 +141,6 @@
   :init
   (add-hook 'ruby-mode-hook 'ruby-tools-mode)
   :diminish ruby-tools-mode)
-
-(use-package yaml-mode
-  :ensure t)
 
 ;;(use-package yari
 ;;  :ensure t
@@ -415,10 +421,18 @@
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; Toml file
+;; Config file
 
 (use-package toml-mode
   :ensure t)
+
+(use-package yaml-mode
+  :ensure t)
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -509,6 +523,7 @@
  '(default-frame-alist '((fullscreen . maxinized)))
  '(electric-pair-mode t)
  '(global-display-line-numbers-mode t)
+ '(inhibit-startup-screen t)
  '(lsp-auto-guess-root nil)
  '(make-backup-files nil)
  '(neo-theme 'nerd)
