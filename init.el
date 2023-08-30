@@ -30,6 +30,14 @@
   :config
   (reverse-im-mode t)) ; turn the mode on
 
+;; Multiple Cursors
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  ("C-S-c C-S-c" . mc/edit-lines)
+  ("C-d" . mc/mark-next-like-this)
+  ("C-k" . mc/skip-to-next-like-this))
+
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion Avy
@@ -493,10 +501,11 @@
  '(default-frame-alist '((fullscreen . maxinized)))
  '(global-display-line-numbers-mode t)
  '(lsp-auto-guess-root nil)
+ '(make-backup-files nil)
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(projectile magit format-all lsp-ruby neotree atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(multiple-cursors projectile magit format-all lsp-ruby neotree atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
