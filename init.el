@@ -30,15 +30,6 @@
   :config
   (reverse-im-mode t)) ; turn the mode on
 
-;; Multiple Cursors
-(use-package multiple-cursors
-  :ensure t
-  :bind
-  ("C-S-c C-S-c" . mc/edit-lines)
-  ("C-d" . mc/mark-next-like-this)
-  ("C-k" . mc/skip-to-next-like-this))
-
-
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion Avy
 (use-package avy
@@ -52,6 +43,16 @@
   ("C-:" . avy-goto-char)
   ("C-'" . avy-goto-char-2))
 
+;; Multiple Cursors
+(use-package multiple-cursors
+  :ensure t
+  :bind
+  ("C-S-c C-S-c" . mc/edit-lines)
+  ("C-d" . mc/mark-next-like-this)
+  ("C-k" . mc/skip-to-next-like-this))
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Effects
 ;; Scroll effect
 (setq redisplay-dont-pause t
       scroll-margin 5
@@ -121,12 +122,19 @@
    ([(meta up)]   . ruby-backward-sexp)
    (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
 
+(use-package rvm
+  :ensure t
+  :config
+  (rvm-use-default))
 
-;; (use-package ruby-tools
-;;   :ensure t
-;;   :init
-;;   (add-hook 'ruby-mode-hook 'ruby-tools-mode)
-;;   :diminish ruby-tools-mode)
+(use-package ruby-tools
+  :ensure t
+  :init
+  (add-hook 'ruby-mode-hook 'ruby-tools-mode)
+  :diminish ruby-tools-mode)
+
+(use-package yaml-mode
+  :ensure t)
 
 ;;(use-package yari
 ;;  :ensure t
@@ -499,6 +507,7 @@
  '(custom-safe-themes
    '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maxinized)))
+ '(electric-pair-mode t)
  '(global-display-line-numbers-mode t)
  '(lsp-auto-guess-root nil)
  '(make-backup-files nil)
