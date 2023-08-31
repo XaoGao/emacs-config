@@ -131,6 +131,9 @@
    ([(meta up)]   . ruby-backward-sexp)
    (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
 
+(use-package ruby-hash-syntax
+  :ensure t)
+
 (use-package rvm
   :ensure t
   :config
@@ -142,12 +145,57 @@
   (add-hook 'ruby-mode-hook 'ruby-tools-mode)
   :diminish ruby-tools-mode)
 
+(use-package inf-ruby
+  :ensure t)
+
+(use-package rubocop
+  :ensure t)
+
+(use-package ruby-electric
+  :ensure t)
+
+(use-package ruby-end
+  :ensure t)
+
+(use-package rspec-mode
+  :ensure t)  
+
 ;;(use-package yari
 ;;  :ensure t
 ;;  :init
 ;;  (add-hook 'ruby-mode-hook
 ;;            (lambda ()
 ;;              (local-set-key [f1] 'yari))))
+
+;; Javascript
+(use-package js2-mode
+  :ensure t
+  :hook ((js2-mode . js2-imenu-extras-mode))
+  :init
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+
+(use-package rjsx-mode
+  :ensure t
+  :mode "\\.js\\'")
+
+(defun setup-tide-mode()
+  "Setup function for tide."
+  (interactive)
+  (tide-setup)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  (tide-hl-identifier-mode +1)
+  (company-mode +1))
+
+(use-package tide
+  :ensure t
+  :after (rjsx-mode company flycheck)
+  :hook (rjsx-mode . setup-tide-mode))
+
+(use-package prettier-js
+  :ensure t
+  :after (rjsx-mode)
+  :hook (rjsx-mode . prettier-js-mode))
 
 ;; LSP
 (use-package lsp-mode
@@ -169,7 +217,9 @@
   (lsp-rust-analyzer-display-parameter-hints nil)
   (lsp-rust-analyzer-display-reborrow-hints nil)
   :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  (add-hook 'ruby-mode-hook 'lsp)
+  :hook (ruby-mode . lsp))
 
 (use-package lsp-ui
   :ensure t
@@ -179,7 +229,19 @@
 
 (use-package web-mode
   :ensure t
-  :mode "\\.erb\\'")
+  :mode "\\.erb\\'"
+  :mode "\\.html\\'")
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Debugger
+
+(use-package dap-mode
+  :config
+  (dap-auto-configure-mode)
+  :bind
+  (("<f7>" . dap-step-in)
+   ("<f9>" . dap-next)
+   ("<f10>" . dap-continue)))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; auto-completion and code snippets
@@ -517,13 +579,14 @@
      (1091 "e")
      (1094 "w")
      (1081 "q")))
- '(custom-enabled-themes '(deeper-blue))
+ '(custom-enabled-themes '(atom-one-dark))
  '(custom-safe-themes
    '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
- '(default-frame-alist '((fullscreen . maxinized)))
+ '(default-frame-alist '((fullscreen . maximized)))
  '(electric-pair-mode t)
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
+ '(initial-scratch-message nil)
  '(lsp-auto-guess-root nil)
  '(make-backup-files nil)
  '(neo-theme 'nerd)
