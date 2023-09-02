@@ -6,6 +6,9 @@
 ;; Open recently file 
 (global-set-key "\C-x\ \C-g" 'recentf-open-files)
 
+(global-set-key (kbd "<home>") 'back-to-indentation)
+(global-set-key (kbd "C-<home>") 'beginning-of-line)
+
 ;; Needed for `:after char-fold' to work
 (use-package char-fold
   :ensure t
@@ -194,6 +197,9 @@
   :mode "Vagrantfile\\'"
   :interpreter "ruby"
 
+  :hook
+  (ruby-mode . lsp-deferred)
+
   :init
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil)
@@ -202,7 +208,10 @@
   :bind
   (([(meta down)] . ruby-forward-sexp)
    ([(meta up)]   . ruby-backward-sexp)
-   (("C-c C-e"    . ruby-send-region))))  ;; Rebind since Rubocop uses C-c C-r
+   (("C-c C-e"    . ruby-send-region)))
+  :config
+  (require 'dap-ruby)
+  (dap-ruby-setup))  ;; Rebind since Rubocop uses C-c C-r
 
 (use-package ruby-hash-syntax
   :ensure t)
@@ -221,9 +230,6 @@
 (use-package inf-ruby
   :ensure t)
 
-(use-package rubocop
-  :ensure t)
-
 (use-package ruby-electric
   :ensure t)
 
@@ -231,7 +237,10 @@
   :ensure t)
 
 (use-package rspec-mode
-  :ensure t)  
+  :ensure t
+  :after inf-ruby
+  :init
+  (add-hook 'after-init-hook 'inf-ruby-switch-setup))  
 
 ;;(use-package yari
 ;;  :ensure t
@@ -281,6 +290,12 @@
   :after (rjsx-mode)
   :hook (rjsx-mode . prettier-js-mode))
 
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
 ;; LSP
 (use-package lsp-mode
   :ensure t
@@ -308,8 +323,7 @@
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (add-to-list 'lsp-file-watch-ignored "\\.vscode\\'")
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  (add-hook 'ruby-mode-hook 'lsp)
-  :hook ((ruby-mode go-mode). lsp))
+  :hook (go-mode . lsp))
 
 (use-package lsp-ui
   :ensure t
@@ -317,10 +331,23 @@
   :custom
   (lsp-uo-doc-show-with-cursor t))
 
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; web
+
+(use-package emmet-mode
+  :ensure t
+  :bind
+  (("C-j" . emmet-expand-line)))
+
 (use-package web-mode
   :ensure t
   :mode "\\.erb\\'"
-  :mode "\\.html\\'")
+  :mode "\\.html\\'"
+  :mode "\\.css\\'"
+  :mode "\\.js\\'"
+  :hook ((web-mode-hook . emmet-mode)
+	 (web-mode-before-auto-complete-hooks . company-mode-hook)))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Debugger
@@ -692,7 +719,8 @@
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tab-bar-mode t)
- '(tool-bar-mode nil))
+ '(tool-bar-mode nil)
+ '(web-mode-enable-auto-closing t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
