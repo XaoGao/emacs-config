@@ -1,5 +1,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
 
 (package-initialize)
 
@@ -8,6 +9,10 @@
 
 (global-set-key (kbd "<home>") 'back-to-indentation)
 (global-set-key (kbd "C-<home>") 'beginning-of-line)
+
+;; Terminal
+(use-package vterm
+    :ensure t)
 
 ;; Needed for `:after char-fold' to work
 (use-package char-fold
@@ -38,8 +43,7 @@
   :bind
   (:map global-map
 	([f8] . treemacs)
-	("C-<f8>" . treemacs-select-window)
-	("M-0" . treemacs-select-window))
+	("C-<f8>" . treemacs-select-window))
   :config
   (progn
     (setq treemacs-is-never-other-window t
@@ -231,16 +235,33 @@
   :ensure t)
 
 (use-package ruby-electric
+  :after ruby-mode
   :ensure t)
 
 (use-package ruby-end
+  :after ruby-mode
   :ensure t)
+
+(use-package bundler
+  :ensure t
+  :defer t)
 
 (use-package rspec-mode
   :ensure t
   :after inf-ruby
   :init
-  (add-hook 'after-init-hook 'inf-ruby-switch-setup))  
+  (add-hook 'after-init-hook 'inf-ruby-switch-setup))
+
+(use-package rinari
+  :ensure t)
+
+(use-package projectile-rails
+  :ensure t
+  :init
+  (projectile-rails-global-mode)
+  :bind
+  (:map projectile-rails-mode-map
+  ("C-c r" . projectile-rails-command-map)))
 
 ;;(use-package yari
 ;;  :ensure t
@@ -323,7 +344,7 @@
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (add-to-list 'lsp-file-watch-ignored "\\.vscode\\'")
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  :hook (go-mode . lsp))
+  :hook ((go-mode) . lsp))
 
 (use-package lsp-ui
   :ensure t
@@ -600,6 +621,12 @@
 
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Docker
+(use-package docker
+  :ensure t
+  :bind ("C-c d" . docker))
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Config file
 
 (use-package toml-mode
@@ -612,7 +639,6 @@
   :ensure t
   :mode ("README\\.md\\'" . gfm-mode)
   :init (setq markdown-command "multimarkdown"))
-
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; AI
@@ -709,12 +735,13 @@
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
+ '(lsp-auto-configure t)
  '(lsp-auto-guess-root nil)
  '(make-backup-files nil)
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
