@@ -3,12 +3,21 @@
 (add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
 
 (package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
 
 ;; Open recently file 
 (global-set-key "\C-x\ \C-g" 'recentf-open-files)
 
 (global-set-key (kbd "<home>") 'back-to-indentation)
 (global-set-key (kbd "C-<home>") 'beginning-of-line)
+
+(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
 ;; Terminal
 (use-package vterm
@@ -370,6 +379,9 @@
   :hook ((web-mode-hook . emmet-mode)
 	 (web-mode-before-auto-complete-hooks . company-mode-hook)))
 
+(use-package slim-mode
+  :ensure t)
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Debugger
 
@@ -441,7 +453,10 @@
   (company-idle-delay 0.01))
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :bind (
+	 ("C-x g" . magit-status)
+	 ))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Inline errors
@@ -731,6 +746,7 @@
  '(custom-safe-themes
    '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maximized)))
+ '(desktop-save-mode t)
  '(electric-pair-mode t)
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
