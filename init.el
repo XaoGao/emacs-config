@@ -54,6 +54,14 @@
   :config
   (reverse-im-mode t)) ; turn the mode on
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Helper
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.8))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Ivy
@@ -77,6 +85,31 @@
 	)
   :config
   (ivy-mode 1))
+
+(use-package ivy-rich
+  :ensure t
+  :init
+  (ivy-rich-mode 1))
+
+(use-package counsel
+  :ensure t
+  :bind(
+	("M-x" . counsel-M-x)
+	("C-x b" . counsel-ibuffer)
+	("C-x C-f" . counsel-find-file)
+	:map minibuffer-local-map
+	("C-r" . 'counsel-minibuffer-history)))
+
+(use-package helpful
+  :ensure t
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
 
 (use-package swiper
   :ensure t)
@@ -206,9 +239,20 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+(use-package doom-themes
+  :ensure t)
+
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package sublimity
+  :ensure t
+  :config
+  (sublimity-mode 1)
+  (setq sublimity-scroll-weight 10
+        sublimity-scroll-drift-length 5)
+  )
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; rustic = basic rust-mode + additions
@@ -790,10 +834,11 @@
      (1081 "q")))
  '(custom-enabled-themes '(atom-one-dark))
  '(custom-safe-themes
-   '("0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
+   '("88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maximized)))
  '(desktop-save-mode t)
  '(electric-pair-mode t)
+ '(fci-rule-color "#3E4451")
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
@@ -803,11 +848,19 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tab-bar-mode t)
+ '(tetris-x-colors
+   [[229 192 123]
+    [97 175 239]
+    [209 154 102]
+    [224 108 117]
+    [152 195 121]
+    [198 120 221]
+    [86 182 194]])
  '(tool-bar-mode nil)
  '(web-mode-enable-auto-closing t))
 (custom-set-faces
