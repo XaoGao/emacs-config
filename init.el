@@ -55,8 +55,8 @@
   (reverse-im-mode t)) ; turn the mode on
 
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Ivy
-
 (use-package ivy
   :ensure t
   :diminish
@@ -80,6 +80,7 @@
 
 (use-package swiper
   :ensure t)
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
 
@@ -155,7 +156,7 @@
   ("M-g l" . avy-goto-line)
   ("C-c l" . avy-copy-line)
   ("C-c m" . avy-move-line)
-  ("M-g e" . avy-goto-word-0)  
+  ("M-g e" . avy-goto-word-0)
   ("M-g w" . avy-goto-word-1)
   ("C-:" . avy-goto-char)
   ("C-'" . avy-goto-char-2))
@@ -199,6 +200,11 @@
 (use-package all-the-icons
   :ensure t
   :if (display-graphic-p))
+
+;; Modeline
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; rustic = basic rust-mode + additions
@@ -793,7 +799,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
