@@ -11,13 +11,23 @@
 
 (require 'use-package)
 
-;; Open recently file 
+;; Open recently file
 (global-set-key "\C-x\ \C-g" 'recentf-open-files)
 
 (global-set-key (kbd "<home>") 'back-to-indentation)
 (global-set-key (kbd "C-<home>") 'beginning-of-line)
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+
+;; turn off beep
+(defun my-bell-function ()
+  (unless (memq this-command
+        '(isearch-abort abort-recursive-edit exit-minibuffer
+              keyboard-quit mwheel-scroll down up next-line previous-line
+              backward-char forward-char))
+    (ding)))
+(setq ring-bell-function 'my-bell-function)
 
 ;; Terminal
 (use-package vterm
@@ -44,6 +54,32 @@
   :config
   (reverse-im-mode t)) ; turn the mode on
 
+
+;; Ivy
+
+(use-package ivy
+  :ensure t
+  :diminish
+  :bind(
+	("C-s" . swiper)
+	:map ivy-minibuffer-map
+	("TAB" . ivy-alt-done)
+	("C-l" . ivy-alt-done)
+	("C-j" . ivy-next-line)
+	("C-k" . ivy-previous-line)
+	:map ivy-switch-buffer-map
+	("C-l" . ivy-done)
+	("C-d" . ivy-switch-buffer-kill)
+	("C-k" . ivy-previous-line)
+	:map ivy-reverse-i-search-map
+	("C-k" . ivy-previous-line)
+	("C-d" . ivy-reverse-i-search-kill)
+	)
+  :config
+  (ivy-mode 1))
+
+(use-package swiper
+  :ensure t)
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
 
@@ -757,7 +793,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
