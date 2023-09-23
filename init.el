@@ -121,7 +121,28 @@
  "<home>" 'back-to-indentation
  "C-<home>" 'beginning-of-line
  "<escape>" 'keyboard-escape-quit
- "C-`" 'vterm)
+ "C-c t" 'vterm)
+
+;; evil mode
+;; (defun rune/evil-hook()
+;;   ;; Set Emacs state modes
+;;   (dolist (mode '(custom-mode
+;;                   eshell-mode
+;;                   git-rebase-mode
+;;                   erc-mode
+;;                   circe-server-mode
+;;                   circe-chat-mode
+;;                   circe-query-mode
+;;                   sauron-mode
+;;                   term-mode))
+;;     (add-to-list 'evil-emacs-state-modes mode)))
+
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-integration t)
+;;   :hook (evil-mode . rune/evil-hook)
+;;   :config
+;;   (evil-mode 1))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
@@ -213,12 +234,17 @@
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
   (when (file-directory-p "~/Documents")
     (setq projectile-project-search-path '("~/Documents")))
   (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :ensure t
+  :config (counsel-projectile-mode))
 
 (use-package treemacs-projectile
   :after (treemacs projectile)
@@ -855,7 +881,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
