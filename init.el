@@ -11,13 +11,6 @@
 
 (require 'use-package)
 
-;; Open recently file
-(global-set-key "\C-x\ \C-g" 'recentf-open-files)
-
-(global-set-key (kbd "<home>") 'back-to-indentation)
-(global-set-key (kbd "C-<home>") 'beginning-of-line)
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
 ;; turn off beep
@@ -91,6 +84,7 @@
   :init
   (ivy-rich-mode 1))
 
+;; More information in system buffer
 (use-package counsel
   :ensure t
   :bind(
@@ -100,6 +94,7 @@
 	:map minibuffer-local-map
 	("C-r" . 'counsel-minibuffer-history)))
 
+;; Add describe methods
 (use-package helpful
   :ensure t
   :custom
@@ -111,12 +106,25 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+
+;; Change iserach to swiper
 (use-package swiper
   :ensure t)
 
+;; Key bindings
+(use-package general
+  :ensure t)
+
+(general-define-key
+ "C-M-j" 'counsel-switch-buffer
+ "C-x C-g" 'recentf-open-files
+ "<home>" 'back-to-indentation
+ "C-<home>" 'beginning-of-line
+ "<escape>" 'keyboard-escape-quit
+ "C-`" 'vterm)
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
-
 (use-package treemacs
   :ensure t
   :bind
@@ -838,7 +846,6 @@
  '(default-frame-alist '((fullscreen . maximized)))
  '(desktop-save-mode t)
  '(electric-pair-mode t)
- '(fci-rule-color "#3E4451")
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
@@ -848,7 +855,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
