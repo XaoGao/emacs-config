@@ -1,6 +1,11 @@
+;;; package --- Configuration
+;;; Commentary:
+
 (require 'package)
+;;; Code:
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
 
 (package-initialize)
 (unless package-archive-contents
@@ -22,6 +27,47 @@
     (ding)))
 (setq ring-bell-function 'my-bell-function)
 
+(defun efs/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Org mode
+(use-package org
+  :ensure t
+  :hook (org-mode . efs/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"))
+
+(use-package org-bullets
+  :ensure t
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+(dolist (face '(
+		(org-level-1 . 1.2)
+                (org-level-2 . 1.1)
+                (org-level-3 . 1.05)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.1)
+                (org-level-6 . 1.1)
+                (org-level-7 . 1.1)
+                (org-level-8 . 1.1)
+		)))
+
+(defun efs/org-mode-visual-fill()
+  (setq visual-fill-column-width 100
+	visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :ensure t
+  :hook (org-mode . efs/org-mode-visual-fill))
+
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Terminal
 (use-package vterm
     :ensure t)
@@ -46,15 +92,6 @@
   (reverse-im-input-methods '("ukrainian-computer")) ; translate these methods
   :config
   (reverse-im-mode t)) ; turn the mode on
-
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; Helper
-(use-package which-key
-  :ensure t
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.8))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Ivy
@@ -94,7 +131,15 @@
 	:map minibuffer-local-map
 	("C-r" . 'counsel-minibuffer-history)))
 
-;; Add describe methods
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Helper
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.8))
+
 (use-package helpful
   :ensure t
   :custom
@@ -107,7 +152,8 @@
   ([remap describe-key] . helpful-key))
 
 
-;; Change iserach to swiper
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Change iserach
 (use-package swiper
   :ensure t)
 
@@ -123,7 +169,8 @@
  "<escape>" 'keyboard-escape-quit
  "C-c t" 'vterm)
 
-;; evil mode
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Evil mode
 ;; (defun rune/evil-hook()
 ;;   ;; Set Emacs state modes
 ;;   (dolist (mode '(custom-mode
@@ -212,6 +259,7 @@
     (when treemacs-python-executable
       (treemacs-git-commit-diff-mode t))))
 
+;; Fast move to line
 (use-package avy
   :ensure t
   :bind
@@ -582,6 +630,9 @@
 	 ("C-x g" . magit-status)
 	 ))
 
+(use-package forge
+  :ensure t)
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Inline errors
 
@@ -761,6 +812,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Docker
+
 (use-package docker
   :ensure t
   :bind ("C-c d" . docker))
@@ -881,7 +933,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(codeium visual-fill-column org-bullets forge counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
