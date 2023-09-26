@@ -6,6 +6,9 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(add-to-list 'package-archives
+             (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
+                                    (if (gnutls-available-p) "s" ""))))
 
 (package-initialize)
 (unless package-archive-contents
@@ -15,6 +18,19 @@
   (package-install 'use-package))
 
 (require 'use-package)
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
 
@@ -171,25 +187,43 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Evil mode
-;; (defun rune/evil-hook()
-;;   ;; Set Emacs state modes
-;;   (dolist (mode '(custom-mode
-;;                   eshell-mode
-;;                   git-rebase-mode
-;;                   erc-mode
-;;                   circe-server-mode
-;;                   circe-chat-mode
-;;                   circe-query-mode
-;;                   sauron-mode
-;;                   term-mode))
-;;     (add-to-list 'evil-emacs-state-modes mode)))
+(defun rune/evil-hook ()
+  (dolist (mode '(custom-mode
+                  eshell-mode
+                  git-rebase-mode
+                  erc-mode
+                  circe-server-mode
+                  circe-chat-mode
+                  circe-query-mode
+                  sauron-mode
+                  term-mode
+		  vterm-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
 
-;; (use-package evil
-;;   :init
-;;   (setq evil-want-integration t)
-;;   :hook (evil-mode . rune/evil-hook)
-;;   :config
-;;   (evil-mode 1))
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  (setq evil-want-C-i-jump nil)
+  ;; :hook (evil-mode . rune/evil-hook)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
+
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
@@ -624,11 +658,12 @@
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.01))
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; packages for Git
+
 (use-package magit
   :ensure t
-  :bind (
-	 ("C-x g" . magit-status)
-	 ))
+  :bind (("C-x g" . magit-status)))
 
 (use-package forge
   :ensure t)
@@ -797,7 +832,6 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
-
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
   :ensure t
@@ -808,7 +842,6 @@
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
-
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Docker
@@ -834,6 +867,26 @@
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; AI
 ;; use codeium https://codeium.com/emacs_tutorial
+;; (use-package codeium
+;;   :ensure t
+;;   :straight '(:type git :host github :repo "Exafunction/codeium.el")
+;;   :init
+;;   (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+;;   :config
+;;   (setq use-dialog-box nil)
+;;   (setq codeium-mode-line-enable
+;;       (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
+;;   (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
+;;   (setq codeium-api-enabled
+;;       (lambda (api)
+;;           (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+;;   (defun my-codeium/document/text ()
+;;       (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+;;   (defun my-codeium/document/cursor_offset ()
+;;       (codeium-utf8-byte-length
+;;           (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+;;   (setq codeium/document/text 'my-codeium/document/text)
+;;   (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -920,10 +973,11 @@
      (1081 "q")))
  '(custom-enabled-themes '(atom-one-dark))
  '(custom-safe-themes
-   '("88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
+   '("a9eeab09d61fef94084a95f82557e147d9630fbbb82a837f971f83e66e21e5ad" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maximized)))
  '(desktop-save-mode t)
  '(electric-pair-mode t)
+ '(fci-rule-color "#3E4451")
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
@@ -933,7 +987,7 @@
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
  '(package-selected-packages
-   '(codeium visual-fill-column org-bullets forge counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+   '(visual-fill-column org-bullets forge counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
  '(recentf-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
