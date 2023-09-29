@@ -19,6 +19,8 @@
 
 (require 'use-package)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
@@ -33,6 +35,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+(set-terminal-coding-system 'utf-8-unix)
 
 ;; turn off beep
 (defun my-bell-function ()
@@ -167,7 +170,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Change iserach
 (use-package swiper
@@ -175,7 +177,38 @@
 
 ;; Key bindings
 (use-package general
-  :ensure t)
+  :ensure t
+  :config
+  (general-create-definer rune/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+  
+  (rune/leader-keys
+   "t" '(:ignore t :which-key "treemacs")
+   "tt" 'treemacs
+   "ts" 'treemacs-select-window
+   "g" '(:ignore t :which-key "git")
+   "gs" 'magit-status
+   "gd" 'maigt-diff-unstaged
+   "gc" 'magit-branch-or-checkout
+   "gb" 'magir-branch
+   "gP" 'magit-push-current
+   "gp" 'magit-pull-branch
+   "gf" 'magit-fetch
+   "gF" 'magit-fetch-all
+   "gr" 'magit-rebase'
+   "gm" 'magit-merge
+   "b" '(:ignore t :which-key "buffer")
+   "bb" '(switch-to-buffer :wk "Switch to buffer")
+   "bc" '(clone-indirect-buffer :wk "Create indirect buffer copy in split")
+   "bk" '(kill-current-buffer :wk "Kill current buffer")
+   "bi" '(ibuffer :wk "IBuffer")
+   "bK" '(kill-some-buffers :wk "Kill multiple buffers")
+   "bd" '(bookmark-delete :wk "Delete bookmark")
+   "bl" '(list-bookmarks :wk "List bookmarks")
+   "bj" '(bookmark-jump :wk "Jump to a bookmark")
+   "bs" '(bookmark-set :wk "Save a new bookmark")))
 
 (general-define-key
  "C-M-j" 'counsel-switch-buffer
@@ -224,6 +257,12 @@
   :after evil
   :config
   (evil-collection-init))
+
+(use-package evil-commentary
+  :ensure t
+  :after evil
+  :config
+  (evil-commentary-mode 1))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
@@ -362,14 +401,6 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package sublimity
-  :ensure t
-  :config
-  (sublimity-mode 1)
-  (setq sublimity-scroll-weight 10
-        sublimity-scroll-drift-length 5)
-  )
-
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; rustic = basic rust-mode + additions
 (use-package rustic
@@ -478,6 +509,17 @@
   (:map projectile-rails-mode-map
   ("C-c r" . projectile-rails-command-map)))
 
+(use-package robe
+  :ensure t
+  :defer t
+  :commands (robe-mode)
+  :init
+  (progn
+    (add-hook 'ruby-mode-hook 'robe-mode)
+    (add-hook 'robe-mode-hook
+              (defun jordon-robe-setup ()
+                (company-mode t)
+                (add-to-list 'company-backends 'company-robe)))))
 ;;(use-package yari
 ;;  :ensure t
 ;;  :init
@@ -530,7 +572,9 @@
   :mode "\\.ts\\'"
   :hook (typescript-mode . lsp-deferred)
   :config
-  (setq typescript-indent-level 2))
+  (setq typescript-indent-level 2)
+  (require 'dap-node)
+  (dap-mode-setup))
 
 ;; LSP
 (use-package lsp-mode
@@ -866,6 +910,18 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; AI
+(use-package codeium
+  :ensure t
+  :straight (:type git :host github :repo "Exafunction/codeium.el")
+  :config 
+  (setq use-dialog-box nil) ;; do not use popup boxes
+  (add-to-list 'company-backends #'codeium-completion-at-point)
+  (codeium-init))
+
+(use-package company-tabnine
+  :ensure t
+  :config
+  (add-to-list 'company-backends #'company-tabnine))
 ;; use codeium https://codeium.com/emacs_tutorial
 ;; (use-package codeium
 ;;   :ensure t
