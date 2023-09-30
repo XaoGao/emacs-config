@@ -46,13 +46,14 @@
     (ding)))
 (setq ring-bell-function 'my-bell-function)
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Org mode
+
 (defun efs/org-mode-setup ()
   (org-indent-mode)
   (variable-pitch-mode 1)
   (visual-line-mode 1))
 
-;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; Org mode
 (use-package org
   :ensure t
   :hook (org-mode . efs/org-mode-setup)
@@ -114,6 +115,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Ivy
+
 (use-package ivy
   :ensure t
   :diminish
@@ -152,6 +154,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Helper
+
 (use-package which-key
   :ensure t
   :init (which-key-mode)
@@ -170,8 +173,12 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
+(use-package undo-fu
+  :ensure t)
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Change iserach
+
 (use-package swiper
   :ensure t)
 
@@ -192,7 +199,7 @@
    "gs" 'magit-status
    "gd" 'maigt-diff-unstaged
    "gc" 'magit-branch-or-checkout
-   "gb" 'magir-branch
+   "gb" 'magit-branch
    "gP" 'magit-push-current
    "gp" 'magit-pull-branch
    "gf" 'magit-fetch
@@ -250,7 +257,8 @@
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
   
   (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  (evil-set-undo-system 'undo-fu))
 
 (use-package evil-collection
   :ensure t
@@ -611,9 +619,24 @@
   :custom
   (lsp-uo-doc-show-with-cursor t))
 
+;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+;; Highlighting
+
+(use-package tree-sitter
+  :ensure t
+  :commands (global-tree-sitter-mode)
+  :init
+  (setq tsc-dyn-get-from '(:compilation))
+  :hook
+  ((tree-sitter-after-on . tree-sitter-hl-mode)
+   (after-init . global-tree-sitter-mode)))
+
+(use-package tree-sitter-langs
+  :ensure t
+  :after tree-sitter)
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-;; web
+;; Web
 
 (use-package emmet-mode
   :ensure t
@@ -1027,24 +1050,35 @@
      (1091 "e")
      (1094 "w")
      (1081 "q")))
- '(custom-enabled-themes '(atom-one-dark))
+ '(codeium/metadata/api_key "xxxxxx")
+ '(custom-enabled-themes '(doom-one))
  '(custom-safe-themes
-   '("a9eeab09d61fef94084a95f82557e147d9630fbbb82a837f971f83e66e21e5ad" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
+   '("5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "f64189544da6f16bab285747d04a92bd57c7e7813d8c24c30f382f087d460a33" "2721b06afaf1769ef63f942bf3e977f208f517b187f2526f0e57c1bd4a000350" "8d3ef5ff6273f2a552152c7febc40eabca26bae05bd12bc85062e2dc224cde9a" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "a9eeab09d61fef94084a95f82557e147d9630fbbb82a837f971f83e66e21e5ad" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maximized)))
+ '(delete-selection-mode t)
  '(desktop-save-mode t)
  '(electric-pair-mode t)
+ '(exwm-floating-border-color "#2e2f37")
  '(fci-rule-color "#3E4451")
  '(global-display-line-numbers-mode t)
+ '(highlight-tail-colors ((("#2d3e3e" "#2d3e3e") . 0) (("#333d49" "#333d49") . 20)))
  '(inhibit-startup-screen t)
  '(initial-scratch-message nil)
+ '(jdee-db-active-breakpoint-face-colors (cons "#282a36" "#57c7ff"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#282a36" "#5af78e"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#282a36" "#848688"))
  '(lsp-auto-configure t)
  '(lsp-auto-guess-root nil)
  '(make-backup-files nil)
  '(neo-theme 'nerd)
  '(neo-window-position 'right)
+ '(objed-cursor-color "#ff5c57")
  '(package-selected-packages
    '(visual-fill-column org-bullets forge counsel-projectile general doom-themes doom-modeline swiper treemacs eglot rinari multiple-cursors projectile magit format-all lsp-ruby atom-one-dark-theme flycheck company vertico consult use-package lsp-ui lsp-mode ergoemacs-mode))
+ '(pdf-view-midnight-colors (cons "#f9f9f9" "#282a36"))
  '(recentf-mode t)
+ '(rustic-ansi-faces
+   ["#282a36" "#ff5c57" "#5af78e" "#f3f99d" "#57c7ff" "#ff6ac1" "#9aedfe" "#f9f9f9"])
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tab-bar-mode t)
@@ -1057,6 +1091,29 @@
     [198 120 221]
     [86 182 194]])
  '(tool-bar-mode nil)
+ '(treemacs-indent-guide-mode t)
+ '(vc-annotate-background "#282a36")
+ '(vc-annotate-color-map
+   (list
+    (cons 20 "#5af78e")
+    (cons 40 "#8df793")
+    (cons 60 "#c0f898")
+    (cons 80 "#f3f99d")
+    (cons 100 "#f7e38c")
+    (cons 120 "#fbcd7c")
+    (cons 140 "#ffb86c")
+    (cons 160 "#ff9e88")
+    (cons 180 "#ff84a4")
+    (cons 200 "#ff6ac1")
+    (cons 220 "#ff659d")
+    (cons 240 "#ff607a")
+    (cons 260 "#ff5c57")
+    (cons 280 "#e06663")
+    (cons 300 "#c1716f")
+    (cons 320 "#a27b7b")
+    (cons 340 "#e2e4e5")
+    (cons 360 "#e2e4e5")))
+ '(vc-annotate-very-old-color nil)
  '(web-mode-enable-auto-closing t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
