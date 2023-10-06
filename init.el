@@ -34,15 +34,27 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-(set-face-attribute 'default nil :font "Fira Code Retina" :height 120)
+(defun efs/set-font-faces()
+  (set-face-attribute 'default nil :font "Fira Code Retina" :height 120))
+
+(efs/set-font-faces)
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+	      (lambda (frame)
+		(setq doom-modeline-icon t)
+	        (with-selected-frame frame
+		  (efs/set-font-faces))))
+    (efs/set-font-faces))
+
 (set-terminal-coding-system 'utf-8-unix)
 
 ;; turn off beep
 (defun my-bell-function ()
   (unless (memq this-command
-        '(isearch-abort abort-recursive-edit exit-minibuffer
-              keyboard-quit mwheel-scroll down up next-line previous-line
-              backward-char forward-char))
+		'(isearch-abort abort-recursive-edit exit-minibuffer
+				keyboard-quit mwheel-scroll down up next-line previous-line
+				backward-char forward-char))
     (ding)))
 (setq ring-bell-function 'my-bell-function)
 
@@ -90,7 +102,7 @@
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Terminal
 (use-package vterm
-    :ensure t)
+  :ensure t)
 
 ;; Needed for `:after char-fold' to work
 (use-package char-fold
@@ -190,32 +202,40 @@
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
-  
+
   (rune/leader-keys
-   "t" '(:ignore t :which-key "treemacs")
-   "tt" 'treemacs
-   "ts" 'treemacs-select-window
-   "g" '(:ignore t :which-key "git")
-   "gs" 'magit-status
-   "gd" 'maigt-diff-unstaged
-   "gc" 'magit-branch-or-checkout
-   "gb" 'magit-branch
-   "gP" 'magit-push-current
-   "gp" 'magit-pull-branch
-   "gf" 'magit-fetch
-   "gF" 'magit-fetch-all
-   "gr" 'magit-rebase'
-   "gm" 'magit-merge
-   "b" '(:ignore t :which-key "buffer")
-   "bb" '(switch-to-buffer :wk "Switch to buffer")
-   "bc" '(clone-indirect-buffer :wk "Create indirect buffer copy in split")
-   "bk" '(kill-current-buffer :wk "Kill current buffer")
-   "bi" '(ibuffer :wk "IBuffer")
-   "bK" '(kill-some-buffers :wk "Kill multiple buffers")
-   "bd" '(bookmark-delete :wk "Delete bookmark")
-   "bl" '(list-bookmarks :wk "List bookmarks")
-   "bj" '(bookmark-jump :wk "Jump to a bookmark")
-   "bs" '(bookmark-set :wk "Save a new bookmark")))
+    "t" '(:ignore t :which-key "treemacs/tabs")
+    "tt" '(treemacs :wk "Open/close treemacs")
+    "ts" '(treemacs-select-window :wk "Switch to/from treemacs buffer")
+    "th" '(centaur-tabs-backward :wk "Backward tab")
+    "tl" '(centaur-tabs-forward :wk "Forward tab")
+    "g" '(:ignore t :which-key "git")
+    "gs" 'magit-status
+    "gd" 'maigt-diff-unstaged
+    "gc" 'magit-branch-or-checkout
+    "gb" 'magit-branch
+    "gP" 'magit-push-current
+    "gp" 'magit-pull-branch
+    "gf" 'magit-fetch
+    "gF" 'magit-fetch-all
+    "gr" 'magit-rebase'
+    "gm" 'magit-merge
+    "b" '(:ignore t :which-key "buffer")
+    "bb" '(switch-to-buffer :wk "Switch to buffer")
+    "bc" '(clone-indirect-buffer :wk "Create indirect buffer copy in split")
+    "bk" '(kill-current-buffer :wk "Kill current buffer")
+    "bi" '(ibuffer :wk "IBuffer")
+    "bK" '(kill-some-buffers :wk "Kill multiple buffers")
+    "bd" '(bookmark-delete :wk "Delete bookmark")
+    "bl" '(list-bookmarks :wk "List bookmarks")
+    "bj" '(bookmark-jump :wk "Jump to a bookmark")
+    "bs" '(bookmark-set :wk "Save a new bookmark")
+    "br" '(replace-regexp :wk "Replace characters in region")
+    "p" '(:ignore t :which-key "projectile")
+    "pp" '(projectile-switch-project :wk "Switch to a project")
+    "pf" '(projectile-find-file :wk "Find file by name")
+    "ps" '(projectile-ripgrep :wk "Find file by text")
+    ))
 
 (general-define-key
  "C-M-j" 'counsel-switch-buffer
@@ -227,6 +247,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Evil mode
+
 (defun rune/evil-hook ()
   (dolist (mode '(custom-mode
                   eshell-mode
@@ -252,10 +273,10 @@
   (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  
+
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-  
+
   (evil-set-initial-state 'messages-buffer-mode 'normal)
   (evil-set-initial-state 'dashboard-mode 'normal)
   (evil-set-undo-system 'undo-fu))
@@ -274,6 +295,7 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Naviagtion
+
 (use-package treemacs
   :ensure t
   :bind
@@ -367,8 +389,8 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/Documents")
-    (setq projectile-project-search-path '("~/Documents")))
+  (when (file-directory-p "~/Documents/Programms")
+    (setq projectile-project-search-path '("~/Documents/Programms")))
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
@@ -383,9 +405,19 @@
   :after (treemacs magit)
   :ensure t)
 
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :custom
+  (centaur-tabs-set-icons t)
+  (centaur-tabs-style "zigzag"))
+
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Effects
 ;; Scroll effect
+
 (setq redisplay-dont-pause t
       scroll-margin 5
       scroll-step 1
@@ -408,6 +440,15 @@
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package beacon
+  :ensure t
+  :init (beacon-mode 1))
+
+(use-package highlight-indent-guides
+  :ensure t
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :custom (highlight-indent-guides-method 'bitmap))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; rustic = basic rust-mode + additions
@@ -448,6 +489,7 @@
 ;; Ruby
 (use-package ruby-mode
   :ensure t
+  :after lsp-mode
   :mode "\\.rb\\'"
   :mode "Rakefile\\'"
   :mode "Gemfile\\'"
@@ -469,7 +511,7 @@
    (("C-c C-e"    . ruby-send-region)))
   :config
   (require 'dap-ruby)
-  (dap-ruby-setup))  ;; Rebind since Rubocop uses C-c C-r
+  (dap-ruby-setup))
 
 (use-package ruby-hash-syntax
   :ensure t)
@@ -515,7 +557,7 @@
   (projectile-rails-global-mode)
   :bind
   (:map projectile-rails-mode-map
-  ("C-c r" . projectile-rails-command-map)))
+	("C-c r" . projectile-rails-command-map)))
 
 (use-package robe
   :ensure t
@@ -542,8 +584,8 @@
   :config
   (defun my/go-mode-setup ()
     "Basic Go mode setup."
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+    (add-hook 'before-save-hook #'lsp-format-buffer t t)
+    (add-hook 'before-save-hook #'lsp-organize-imports t t))
   (add-hook 'go-mode-hook #'my/go-mode-setup))
 
 ;; Javascript
@@ -589,6 +631,7 @@
   :ensure t
   :commands (lsp lsp-mode lsp-deferred)
   :custom
+  (lsp-solargraph-multi-root nil)
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
   (lsp-eldoc-render-all t)
@@ -603,6 +646,7 @@
   (lsp-rust-analyzer-display-closure-return-type-hints t)
   (lsp-rust-analyzer-display-parameter-hints nil)
   (lsp-rust-analyzer-display-reborrow-hints nil)
+  (lsp-sqls-workspace-config-path nil)
   :config
   (setq lsp-prefer-flymake nil
         lsp-enable-indentation nil
@@ -611,13 +655,19 @@
   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)
   (add-to-list 'lsp-file-watch-ignored "\\.vscode\\'")
   (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  :hook ((go-mode) . lsp))
+  :hook ((go-mode sql-mode-hook) . lsp))
 
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
   :custom
   (lsp-uo-doc-show-with-cursor t))
+
+(use-package format-all
+  :ensure t
+  :diminish
+  :hook (prog-mode . format-all-ensure-formatter)
+  :bind ("C-c f" . #'format-all-buffer))
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; Highlighting
@@ -680,10 +730,10 @@
   :ensure
   :bind
   (:map company-active-map
-              ("C-n". company-select-next)
-              ("C-p". company-select-previous)
-              ("M-<". company-select-first)
-              ("M->". company-select-last))
+        ("C-n". company-select-next)
+        ("C-p". company-select-previous)
+        ("M-<". company-select-first)
+        ("M->". company-select-last))
   (:map company-mode-map
         ("<tab>". tab-indent-or-complete)
         ("TAB". tab-indent-or-complete)))
@@ -858,7 +908,7 @@
   ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
   ;;;; 5. No project support
   ;; (setq consult-project-function nil)
-)
+  )
 ;; Enable vertico
 (use-package vertico
   :ensure t
@@ -933,39 +983,32 @@
 
 ;; -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ;; AI
+
 (use-package codeium
   :ensure t
   :straight (:type git :host github :repo "Exafunction/codeium.el")
-  :config 
+  :config
   (setq use-dialog-box nil) ;; do not use popup boxes
   (add-to-list 'company-backends #'codeium-completion-at-point)
-  (codeium-init))
+  (codeium-init)
+  (setq codeium-mode-line-enable
+	(lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
+  (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
+  (setq codeium-api-enabled
+	(lambda (api)
+          (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+  (defun my-codeium/document/text ()
+    (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+  (defun my-codeium/document/cursor_offset ()
+    (codeium-utf8-byte-length
+     (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+  (setq codeium/document/text 'my-codeium/document/text)
+  (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
 
 (use-package company-tabnine
   :ensure t
   :config
   (add-to-list 'company-backends #'company-tabnine))
-;; use codeium https://codeium.com/emacs_tutorial
-;; (use-package codeium
-;;   :ensure t
-;;   :straight '(:type git :host github :repo "Exafunction/codeium.el")
-;;   :init
-;;   (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-;;   :config
-;;   (setq use-dialog-box nil)
-;;   (setq codeium-mode-line-enable
-;;       (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
-;;   (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
-;;   (setq codeium-api-enabled
-;;       (lambda (api)
-;;           (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-;;   (defun my-codeium/document/text ()
-;;       (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-;;   (defun my-codeium/document/cursor_offset ()
-;;       (codeium-utf8-byte-length
-;;           (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-;;   (setq codeium/document/text 'my-codeium/document/text)
-;;   (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -1051,15 +1094,98 @@
      (1094 "w")
      (1081 "q")))
  '(codeium/metadata/api_key "xxxxxx")
- '(custom-enabled-themes '(doom-one))
+ '(custom-enabled-themes '(doom-palenight))
  '(custom-safe-themes
-   '("5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "f64189544da6f16bab285747d04a92bd57c7e7813d8c24c30f382f087d460a33" "2721b06afaf1769ef63f942bf3e977f208f517b187f2526f0e57c1bd4a000350" "8d3ef5ff6273f2a552152c7febc40eabca26bae05bd12bc85062e2dc224cde9a" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "a9eeab09d61fef94084a95f82557e147d9630fbbb82a837f971f83e66e21e5ad" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
+   '("013728cb445c73763d13e39c0e3fd52c06eefe3fbd173a766bfd29c6d040f100" "89d9dc6f4e9a024737fb8840259c5dd0a140fd440f5ed17b596be43a05d62e67" "e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" "e14884c30d875c64f6a9cdd68fe87ef94385550cab4890182197b95d53a7cf40" "8d8207a39e18e2cc95ebddf62f841442d36fcba01a2a9451773d4ed30b632443" "3de5c795291a145452aeb961b1151e63ef1cb9565e3cdbd10521582b5fd02e9a" "0c83e0b50946e39e237769ad368a08f2cd1c854ccbcd1a01d39fdce4d6f86478" "37b6695bae243145fa2dfb41440c204cd22833c25cd1993b0f258905b9e65577" "29b4f767c48da68f8f3c2bbf0dde2be58e4ed9c97e685af5a7ab7844f0d08b8b" "7e377879cbd60c66b88e51fad480b3ab18d60847f31c435f15f5df18bdb18184" "5f128efd37c6a87cd4ad8e8b7f2afaba425425524a68133ac0efd87291d05874" "f64189544da6f16bab285747d04a92bd57c7e7813d8c24c30f382f087d460a33" "2721b06afaf1769ef63f942bf3e977f208f517b187f2526f0e57c1bd4a000350" "8d3ef5ff6273f2a552152c7febc40eabca26bae05bd12bc85062e2dc224cde9a" "da75eceab6bea9298e04ce5b4b07349f8c02da305734f7c0c8c6af7b5eaa9738" "a9eeab09d61fef94084a95f82557e147d9630fbbb82a837f971f83e66e21e5ad" "88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" "0c860c4fe9df8cff6484c54d2ae263f19d935e4ff57019999edbda9c7eda50b8" default))
  '(default-frame-alist '((fullscreen . maximized)))
  '(delete-selection-mode t)
  '(desktop-save-mode t)
  '(electric-pair-mode t)
  '(exwm-floating-border-color "#2e2f37")
  '(fci-rule-color "#3E4451")
+ '(format-all-default-formatters
+   '(("Assembly" asmfmt)
+     ("ATS" atsfmt)
+     ("Bazel" buildifier)
+     ("BibTeX" emacs-bibtex)
+     ("C" clang-format)
+     ("C#" csharpier)
+     ("C++" clang-format)
+     ("Cabal Config" cabal-fmt)
+     ("Clojure" zprint)
+     ("CMake" cmake-format)
+     ("Crystal" crystal)
+     ("CSS" prettier)
+     ("Cuda" clang-format)
+     ("D" dfmt)
+     ("Dart" dart-format)
+     ("Dhall" dhall)
+     ("Dockerfile" dockfmt)
+     ("Elixir" mix-format)
+     ("Elm" elm-format)
+     ("Emacs Lisp" emacs-lisp)
+     ("Erlang" efmt)
+     ("F#" fantomas)
+     ("Fish" fish-indent)
+     ("Fortran Free Form" fprettify)
+     ("GLSL" clang-format)
+     ("Go" gofmt)
+     ("GraphQL" prettier)
+     ("Haskell" brittany)
+     ("HTML" html-tidy)
+     ("HTML+EEX" mix-format)
+     ("HTML+ERB" erb-format)
+     ("Java" clang-format)
+     ("JavaScript" prettier)
+     ("JSON" prettier)
+     ("JSON5" prettier)
+     ("Jsonnet" jsonnetfmt)
+     ("JSX" prettier)
+     ("Kotlin" ktlint)
+     ("LaTeX" latexindent)
+     ("Less" prettier)
+     ("Literate Haskell" brittany)
+     ("Lua" lua-fmt)
+     ("Markdown" prettier)
+     ("Meson" muon-fmt)
+     ("Nix" nixpkgs-fmt)
+     ("Objective-C" clang-format)
+     ("OCaml" ocp-indent)
+     ("Perl" perltidy)
+     ("PHP" prettier)
+     ("Protocol Buffer" clang-format)
+     ("PureScript" purty)
+     ("Python" black)
+     ("R" styler)
+     ("Reason" bsrefmt)
+     ("ReScript" rescript)
+     ("Ruby" rubocop)
+     ("Rust" rustfmt)
+     ("Scala" scalafmt)
+     ("SCSS" prettier)
+     ("Shell" shfmt)
+     ("Solidity" prettier)
+     ("SQL" sqlformat)
+     ("Svelte" prettier)
+     ("Swift" swiftformat)
+     ("Terraform" terraform-fmt)
+     ("TOML" prettier)
+     ("TSX" prettier)
+     ("TypeScript" prettier)
+     ("V" v-fmt)
+     ("Verilog" istyle-verilog)
+     ("Vue" prettier)
+     ("XML" html-tidy)
+     ("YAML" prettier)
+     ("Zig" zig)
+     ("_Angular" prettier)
+     ("_Beancount" bean-format)
+     ("_Caddyfile" caddy-fmt)
+     ("_Flow" prettier)
+     ("_Gleam" gleam)
+     ("_Ledger" ledger-mode)
+     ("_Nginx" nginxfmt)
+     ("_Snakemake" snakefmt)))
  '(global-display-line-numbers-mode t)
  '(highlight-tail-colors ((("#2d3e3e" "#2d3e3e") . 0) (("#333d49" "#333d49") . 20)))
  '(inhibit-startup-screen t)
@@ -1081,7 +1207,7 @@
    ["#282a36" "#ff5c57" "#5af78e" "#f3f99d" "#57c7ff" "#ff6ac1" "#9aedfe" "#f9f9f9"])
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
- '(tab-bar-mode t)
+ '(tab-bar-mode nil)
  '(tetris-x-colors
    [[229 192 123]
     [97 175 239]
