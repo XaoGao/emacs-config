@@ -9,6 +9,7 @@
 (add-to-list 'package-archives
              (cons "nongnu" (format "http%s://elpa.nongnu.org/nongnu/"
                                     (if (gnutls-available-p) "s" ""))))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 
 (package-initialize)
 (unless package-archive-contents
@@ -235,7 +236,9 @@
     "pp" '(projectile-switch-project :wk "Switch to a project")
     "pf" '(projectile-find-file :wk "Find file by name")
     "ps" '(projectile-ripgrep :wk "Find file by text")
-    ))
+    "c" '(:ignore t :which-key "Create or generate")
+    "cr" '(:ignore t :which-key "Generate ruby code")
+    "crm" '(generate-ruby-module :wk "Generate ruby module")))
 
 (general-define-key
  "C-M-j" 'counsel-switch-buffer
